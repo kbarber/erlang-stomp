@@ -21,9 +21,11 @@
 -export ([abort_transaction/2]).
 -export ([on_message/2]).
 
-
+%% @doc Connect to a STOMP server and return a connection socket
+%%
 %% Example:	Conn = stomp:connect("localhost", 61613, "", "").
-
+%%
+%% @end
 connect (Host, PortNo, Login, Passcode)  ->
 	Message=lists:append(["CONNECT", "\nlogin: ", Login, "\npasscode: ", Passcode, "\n\n", [0]]),
 	{ok,Sock}=gen_tcp:connect(Host,PortNo,[{active, false}]),
@@ -36,17 +38,21 @@ connect (Host, PortNo, Login, Passcode)  ->
 	end,
 	Sock.
 
-
+%% @doc Subscribe to a named queue
+%%
 %% Example: stomp:subscribe("/queue/foobar", Conn).
-
+%%
+%% @end
 subscribe (Destination, Connection) ->
 	subscribe (Destination, Connection, [{"ack","auto"}]),
 	ok.
 
-%%  Example: stomp:subscribe("/queue/foobar", Conn, [{"ack", "client"}]).
-%%  Example: stomp:subscribe("/queue/foobar", Conn, [{"ack", "client"}, {"activemq.prefetchSize", 1}]).
-
-
+%% @doc Subscribe to a named queue - with options.
+%%
+%% Example: stomp:subscribe("/queue/foobar", Conn, [{"ack", "client"}]).
+%% Example: stomp:subscribe("/queue/foobar", Conn, [{"ack", "client"}, {"activemq.prefetchSize", 1}]).
+%%
+%% @end
 subscribe (Destination, Connection, Options) ->
 	Message=lists:append(["SUBSCRIBE", "\ndestination: ", Destination, concatenate_options(Options),"\n\n", [0]]),
 	gen_tcp:send(Connection,Message),

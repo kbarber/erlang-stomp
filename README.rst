@@ -30,6 +30,25 @@ To clean::
 
   make clean
 
+Testing
+-------
+
+To run the tests, configure a suitable STOMP server (we use ActiveMQ 5.4.0 here)
+with STOMP. In ActiveMQ, add the following lines to activemq.xml to enable this::
+
+  <transportConnectors>
+    ...
+    <transportConnector name="stomp+nio" uri="stomp+nio://localhost:61612"/>
+    <transportConnector name="stomp" uri="stomp://localhost:61613"/>
+    ...
+  </transportConnectors>
+
+By default we assume the username 'system' and 'manager' are active.
+
+Then you can run the tests with::
+
+  make test
+
 Usage
 =====
 

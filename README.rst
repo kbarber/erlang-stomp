@@ -49,6 +49,15 @@ Then you can run the tests with::
 
   make test
 
+API Documentation
+-----------------
+
+You can generate the edoc documentation by running::
+
+  make doc
+
+It will deposit the HTML output in doc/api.
+
 Usage
 =====
 

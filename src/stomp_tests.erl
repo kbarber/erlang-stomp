@@ -3,6 +3,7 @@
 %% @doc stomp test routines
 %%
 %% @end
+%% @hidden
 %% --------------------------
 
 -module(stomp_tests).

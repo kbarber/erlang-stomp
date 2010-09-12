@@ -3,6 +3,7 @@
 %% @doc Primary entry point for tests.
 %%
 %% @end
+%% @hidden
 %% --------------------------
 
 -module(stomp_alltests).

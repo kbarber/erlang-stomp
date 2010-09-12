@@ -22,3 +22,10 @@ test: all
 		-noinput \
 		-s stomp_alltests \
 		start
+
+doc:
+	@mkdir -p doc/api/
+	@erl 	-noshell \
+		-run edoc_run \
+		application "stomp" "src" '[{dir,"doc/api"}]' \
+		-s init stop

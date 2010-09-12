@@ -1,10 +1,14 @@
-%% Module for client support of the STOMP messaging protocol (http://stomp.codehaus.org/Protocol). 
-%% Version 0.1
-%% Authored by Ian Brown (spam@hccp.org)
-%% Documentation can be found at http://www.hccp.org/erlang-stomp-client.html
-%% This was an experiment to get a feel for the Erlang language, and provide simple client access to STOMP suppurting message brokers.  
-%% Please feel free to use and re-distribute as you see fit. Comments, improvements and questions welcome. 
-
+%% --------------------------
+%% @author Ian Brown
+%% @copyright 2009 Ian Brown, 2010 Bob.sh
+%% @version 0.1
+%% @doc Module for client support of the STOMP messaging protocol 
+%% ([http://stomp.codehaus.org/Protocol]). 
+%%
+%% Originally authored by Ian Brown. Modified by Bob.sh.
+%%
+%% @end
+%% --------------------------
 -module (stomp).
 -export ([connect/4]). %% "You sunk my scrabbleship!"
 -export ([disconnect/1]).
@@ -58,24 +62,32 @@ subscribe (Destination, Connection, Options) ->
 	gen_tcp:send(Connection,Message),
 	ok.
 	
-
+%% @doc Remove an existing subscription
+%%
 %% Example: stomp:unsubscribe("/queue/foobar", Conn).
-	
+%%
+%% @end
 unsubscribe (Destination, Connection) ->
 	Message=lists:append(["UNSUBSCRIBE", "\ndestination: ", Destination, "\n\n", [0]]),
 	gen_tcp:send(Connection,Message),
 	ok.	
-	
+
+%% @doc Disconnect gracefully from the existing connection
+%%
 %% Example: stomp:disconnect(Conn).
-	
+%%
+%% @end
 disconnect (Connection) ->
 	Message=lists:append(["DISCONNECT", "\n\n", [0]]),
 	gen_tcp:send(Connection,Message),
 	gen_tcp:close(Connection),
 	ok.	
 
+%% @doc Get a particular message ID
+%%
 %% Example: stomp:get_message_id(Message).
-
+%%
+%% @end
 get_message_id ([_, {headers, Headers}, _]) ->
 	get_message_id (Headers);
 get_message_id ([H|T]) ->
@@ -86,14 +98,13 @@ get_message_id ([H|T]) ->
 get_message_id ([])	->
 	throw("No header with name of 'message-id' was found.").
 	
-	
-	
-	
-	
+%% @doc Acknowledge consumption of a message
+%%
 %% Example: stomp:ack(Conn, Message).
 %% Example: stomp:ack(Conn, stomp:get_message_id(Message)).
 %% Example: stomp:ack(Conn, "ID:phosphorus-63844-1247442885553-3:1:1:1:1").
-
+%%
+%% @end
 ack (Connection, [Type, Headers, Body]) ->
 	MessageId=get_message_id([Type, Headers, Body]),
 	ack(Connection, MessageId);
@@ -102,12 +113,13 @@ ack (Connection, MessageId)	->
 	gen_tcp:send(Connection,AckMessage),
 	ok.
 
-
-
+%% @doc Acknowledge consumption of a message
+%%
 %% Example: stomp:ack(Conn, Message, TransactionId).
 %% Example: stomp:ack(Conn, stomp:get_message_id(Message), TransactionId).
 %% Example: stomp:ack(Conn, "ID:phosphorus-63844-1247442885553-3:1:1:1:1", TransactionId).
-
+%%
+%% @end
 ack (Connection, [Type, Headers, Body], TransactionId) ->
 	MessageId=get_message_id([Type, Headers, Body]),
 	ack(Connection, MessageId, TransactionId);
@@ -116,20 +128,22 @@ ack (Connection, MessageId, TransactionId)	->
 	gen_tcp:send(Connection,AckMessage),
 	ok.
 
+%% @doc Send a message to the destination in the messaging system
+%%
 %% Example: stomp:send(Conn, "/queue/foobar", [], "hello world").
 %% Example: stomp:send(Conn, "/queue/foobar", [{"priority","15"}], "high priority hello world").
-	
+%%
+%% @end
 send (Connection, Destination, Headers, MessageBody) ->
 	Message=lists:append(["SEND", "\ndestination: ", Destination, concatenate_options(Headers), "\n\n", MessageBody, [0]]),
 	gen_tcp:send(Connection,Message),
 	ok.
 		
-		
-	
-	
-
+%% @doc Retrieve messages destined for this client from the server.
+%%
 %% Example: stomp:get_messages(Conn).
-
+%%
+%% @end
 get_messages (Connection) ->
 	get_messages (Connection, []).
 	
@@ -144,33 +158,41 @@ get_messages (Connection, Messages, Response) ->
 			[_|T]=TheRest, %% U.G.L.Y. . . .  you ain't got no alibi.
 			get_messages (Connection, lists:append(Messages, [[{type, Type}, {headers, Headers}, {body, MessageBody}]]), T).
 
-
+%% @doc On message retrieval execute a function
+%%
 %% Example: MyFunction=fun([_, _, {_, X}]) -> io:fwrite("message ~s ~n", [X]) end, stomp:on_message(MyFunction, Conn).
-
+%%
+%% @end
 on_message (F, Conn) ->
 	Messages=get_messages(Conn),
 	apply_function_to_messages(F, Messages),
 	on_message(F, Conn).
 
-
+%% @doc Begin a transaction
+%%
 %% Example: stomp:begin_transaction(Conn, "MyUniqueTransactionIdBlahBlahBlah1234567890").
-
+%%
+%% @end
 begin_transaction (Connection, TransactionId) ->
 	Message=lists:append(["BEGIN", "\ntransaction: ", TransactionId, "\n\n", [0]]),
 	gen_tcp:send(Connection,Message),
 	ok.
 
-
+%% @doc Commit a transaction
+%%
 %% Example: stomp:commit_transaction(Conn, "MyUniqueTransactionIdBlahBlahBlah1234567890").
-	
+%%
+%% @end
 commit_transaction (Connection, TransactionId) ->
 	Message=lists:append(["COMMIT", "\ntransaction: ", TransactionId, "\n\n", [0]]),
 	gen_tcp:send(Connection,Message),
 	ok.
 		
-
+%% @doc Abort a transaction
+%%
 %% Example: stomp:abort_transaction(Conn, "MyUniqueTransactionIdBlahBlahBlah1234567890").
-
+%%
+%% @end
 abort_transaction (Connection, TransactionId) ->
 	Message=lists:append(["ABORT", "\ntransaction: ", TransactionId, "\n\n", [0]]),
 	gen_tcp:send(Connection,Message),

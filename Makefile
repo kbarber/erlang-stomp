@@ -20,5 +20,5 @@ test: all
 		-smp auto \
 		-noshell \
 		-noinput \
-		-s yaml_tests \
+		-s stomp_tests \
 		start

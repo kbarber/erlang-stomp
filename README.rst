@@ -137,6 +137,7 @@ Copyright and License
 =====================
 
 Copyright 2010 Bob.sh
+
 Copyright 2009 Ian Brown
 
 The license for this code is undecided as yet. Assume nothing.

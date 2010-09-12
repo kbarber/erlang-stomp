@@ -2,7 +2,7 @@ About
 =====
 
 This is a STOMP client originally written by Ian Brown. I've simply taken the
-liberty of wrapping it and providing it here for you.
+liberty of wrapping it and providing it here for you. Enjoy.
 
 stomp.erl is a simple client library for message brokers that support the STOMP 
 protocol. It's usage is pretty straight forward, and below, I walk through a 
